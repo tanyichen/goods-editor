@@ -31,20 +31,22 @@
                 </view>
                 <view class="li">
                     <view class="uni-row uni-flex" style="justify-content: space-between;background: #fff;padding: 10px;">
-
+                
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             默认价格￥
                         </view>
-                        <input type="number" disabled=true :value="price" placeholder="无须输入" style="background: #f3f3f3;padding: 5px;flex: 1;" />
+                        <input :class="form.price?'':'red'" type="number" v-model="form.price" placeholder="请输入价格"
+                            style="background: #f3f3f3;padding: 5px;flex: 1;" />
                     </view>
                 </view>
                 <view class="li">
                     <view class="uni-row uni-flex" style="justify-content: space-between;background: #fff;padding: 10px;">
-
+                
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             库存数量
                         </view>
-                        <input type="number" disabled :value="stock" placeholder="无须输入" style="background: #f3f3f3;padding: 5px;flex: 1;" />
+                        <input :class="form.stock?'':'red'" type="number" v-model="form.stock" placeholder="请输入库存数量"
+                            style="background: #f3f3f3;padding: 5px;flex: 1;" />
                     </view>
                 </view>
                 <view class="li">
@@ -53,7 +55,7 @@
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             地区
                         </view>
-                        <input :class="form.category_id?'':'red'" type="text" disabled="true" :value="address"
+                        <input :class="form.area_id?'':'red'" type="text" disabled="true" :value="address"
                             placeholder="请选择" style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
                     </view>
                 </view>
@@ -154,20 +156,6 @@
                     category_id: 0,
                     categoryName: '',
                     text:'',
-  compose: [{
-      id: 12323,
-      name: '型号1',
-      image: 'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg',
-      price: '12.00',
-      stock: '10'
-  }, {
-      id: 12322,
-      name: '尺寸',
-      text: '大号',
-      image: 'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg',
-      price: '12.00',
-      stock: '10'
-  }],
                     image: [{
                         id: '',
                         src: 'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg'
@@ -216,33 +204,37 @@
             }
         },
         watch: {
-            form: {
-                handler(val) {
-                    if (val.compose) {
-                        var stock = 0;
-                        var price = 0;
-                        val.compose.filter(e => {
-                            // if(e.stock!=parseInt(e.stock)){
-                            //     e.stock=parseInt(e.stock);
-                            // }
-                            if (e.stock) {
-                                stock += parseInt(e.stock);
-                            }
-
-                            if (!price && e.price) {
-                                price = e.price
-                            } else if (e.price < price) {
-                                price = e.price
-                            }
-                        })
-                        this.stock = stock;
-                        this.price = price
-                    }
-                    // console.log(JSON.stringify(val)==JSON.stringify(old))
-
-                },
-                deep: true
-            }
+           'form.stock': {
+               handler(e,old) {
+                   var val=parseInt(e);
+                   // console.log([e==val,e,val])
+                   if(val!=e){
+                   val=''+val;
+                   var stock=parseInt(val.substr(0,6)) || '';
+                   console.log(stock)
+                   setTimeout(()=>{
+                   this.$set(this.form,'stock',stock);
+                   },10)
+                   }
+               },
+               immediate: true
+           },'form.price': {
+               handler(e,old) {
+                   var val=Math.round(e*100)/100;
+                   // console.log({e,val})
+                   if(val!=e){
+                       val =''+val;
+                       var price=val.substr(0,6);
+                       price=Math.round(price*100)/100;
+                       // console.log(price)
+                       setTimeout(()=>{
+                           this.$set(this.form,'price',price);
+                       },10)
+                   }
+           
+               },
+               immediate: true
+           }
         },
         computed: {
             hasLogin() {
@@ -523,9 +515,6 @@
 
                 // console.log((this.imgList))
                 var form = this.form;
-                form.stock = this.stock;
-                form.price = this.price;
-                var version = form.version; //版本
                 var attribute = form.attribute; //属性
 
 
@@ -550,29 +539,6 @@
                 }
 
 
-
-                var compose = form.compose; //套餐
-                for (var ci = 0; ci < compose.length; ci++) {
-                    var item = compose[ci];
-                    for (var k in item) {
-                        if (!item[k]) {
-                            err.ok = false;
-                            err.msg =
-                                "套餐信息输入有误\n错误位置:版本" +
-                                (i + 1) +
-                                "套系" + (ci + 1) +
-                                "。"
-                            break;
-                        }
-                    }
-                    if (!err.ok) {
-                        break;
-                    }
-                    // console.log(item)
-                }
-
-
-
                 if (form.title.length < 2) {
                     err.ok = false;
                     err.msg = "标题不足2个字";
@@ -587,6 +553,9 @@
                 } else if (!parseInt(form.stock) > 0) {
                     err.ok = false;
                     err.msg = "库存输入有误";
+                }else if(!form.area_id){
+                    err.ok=false;
+                    err.msg="地址不能为空"
                 } else if (this.imgList.length < 1) {
                     err.ok = false;
                     err.msg = "至少添加一张图片";

@@ -4,9 +4,11 @@
         <city-picker ref="classifyPicker" :dataList="classifyPickerData" :value="'id'" @onConfirm="onConfirmClass"></city-picker>
         <scroll-view class="" scroll-y="true" :style="'height:'+scrollHeight+'px;'">
 
-            <view class="swiper-list" style="padding-top: 5px;height: auto;">
-                <choose :count="count" :imgList="imgList" @changes="fileChange"></choose>
+            <view class="" @tap="tapImage" style="display: flex;justify-content: center;flex-direction: row;">
+                <!-- <image-cut></image-cut> -->
+                <image :src="form.image" style="width: 200px;height: 200px;" mode="aspectFill"> </image>
             </view>
+
             <compress ref="compress" :maxwh="maxwh" :quality="quality"> </compress>
 
             <view class="list">
@@ -55,8 +57,8 @@
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             地区
                         </view>
-                        <input :class="form.area_id?'':'red'" type="text" disabled="true" :value="address" placeholder="请选择"
-                            style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
+                        <input :class="form.area_id?'':'red'" type="text" disabled="true" :value="address"
+                            placeholder="请选择" style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
                     </view>
                 </view>
                 <city-picker ref="cityPicker" :dataList="cityPickerData" :label="'label'" @onConfirm="onConfirmCity"></city-picker>
@@ -126,10 +128,7 @@
                     category_id: 0,
                     categoryName: '',
                     text:'',
-                    image: [{
-                        id: '',
-                        src: 'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg'
-                    }]
+                    image:  'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg'
 
                 },
 
@@ -155,10 +154,7 @@
                     price: '',
                     stock: '',
                     category_id: 0,
-                    content: [{
-                        text: '',
-                        type: 'text'
-                    }],
+                    content: '',
                 },
                 cityPickerData: [],
                 provinceData: provinceData,
@@ -167,9 +163,9 @@
             }
         },
         watch: {
-'form.stock': {
+            'form.stock': {
                 handler(e,old) {
-                    var val=parseInt(e);
+                    var val=parseInt(e.substr(0,6));
                     // console.log([e==val,e,val])
                     if(val!=e){
                     val=''+val;
@@ -183,7 +179,7 @@
                 immediate: true
             },'form.price': {
                 handler(e,old) {
-                    var val=Math.round(e*100)/100;
+                    var val=Math.round(e.substr(0,6)*100)/100;
                     // console.log({e,val})
                     if(val!=e){
                         val =''+val;
@@ -203,10 +199,6 @@
             hasLogin() {
                 return this.$store.getters.hasLogin
             },
-            textImageData() {
-                // console.log(this.form.content)
-                return this.form.content;
-            }
         },
         onShow() {
 
@@ -236,13 +228,9 @@
             var rawData = Object.assign({}, this.rawData);
 
 
-            var imageList = rawData.image;
-            var imgList = [];
-            for (var i = 0; i < imageList.length; i++) {
-                imgList.push(imageList[i].src)
-            }
+
             this.form = JSON.parse(JSON.stringify(rawData));
-            this.imgList = imgList;
+            // this.imgList = imgList;
             // console.log(imgList)
             // Request('NewsCategory_list', {
             //     data: {
@@ -284,7 +272,30 @@
             // console.log(this.banner)
         },
         methods: {
+           addImage(idx) {
            
+               uni.chooseImage({
+                   count: 6, //默认9
+                   sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+                   sourceType: ['album'], //从相册选择
+                   success: (res) => {
+                       var compose = this.form.compose;
+                       this.$refs.compress.yasuoImg([res.tempFilePaths[0]]).then(
+                           imgs => {
+           
+                               YCImg.imgsToBase64(imgs).then(
+                                   base64All => {
+                                       // console.log(base64All)
+                                       compose[idx].image = base64All[0];
+                                       // this.form.compose= null;
+                                       this.form.compose = compose;
+           
+                                   })
+           
+                           })
+                   }
+               });
+           },
             // 三级联动选择
             showMulLinkageThreePicker() {
                 this.$refs.cityPicker.showPickerView(true);
@@ -298,30 +309,7 @@
                 this.form.area_id = e.data[1].value * 100;
 
             },
-            addImage(idx) {
 
-                uni.chooseImage({
-                    count: 6, //默认9
-                    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-                    sourceType: ['album'], //从相册选择
-                    success: (res) => {
-                        var compose = this.form.compose;
-                        this.$refs.compress.yasuoImg([res.tempFilePaths[0]]).then(
-                            imgs => {
-
-                                YCImg.imgsToBase64(imgs).then(
-                                    base64All => {
-                                        // console.log(base64All)
-                                        compose[idx].image = base64All[0];
-                                        // this.form.compose= null;
-                                        this.form.compose = compose;
-
-                                    })
-
-                            })
-                    }
-                });
-            },
             onConfirmClass(e) {
 
 
@@ -346,16 +334,12 @@
                 this.imgList = e;
 
             },
-
-            previewImage() { //预览图片
-                uni.previewImage({
-                    urls: this.imgList
-                });
-            },
             send() {
 
                 // console.log((this.imgList))
                 var form = this.form;
+                // form.stock = this.stock;
+                // form.price = this.price;
 
                 // 表单验证
                 var err = {
@@ -367,11 +351,11 @@
                 if (form.title.length < 2) {
                     err.ok = false;
                     err.msg = "标题不足2个字";
-                
+
                 } else if (!form.category_id) {
                     err.ok = false;
                     err.msg = "请选择分类";
-                
+
                 } else if (!parseFloat(form.price)) {
                     err.ok = false;
                     err.msg = "价格输入有误";
@@ -381,10 +365,6 @@
                 }else if (!form.area_id) {
                     err.ok = false;
                     err.msg = "请选择地址";
-                } else if (this.imgList.length < 1) {
-                    err.ok = false;
-                    err.msg = "至少添加一张图片";
-
                 } else if (form.text.length < 1) {
                     err.ok = false;
                     err.msg = "内容不能为空";
@@ -405,68 +385,25 @@
                 }, 5000);
                 var rawData = this.rawData
                 
+                // var img1 = rawData.image; //旧数据
 
 
-                var img1 = rawData.image; //旧数据
-                var img2 = this.imgList; //新数据
-
-                var addImage = [];
-                var delImage = [];
-                var upImage = [];
-                // console.log(img1)
-                img2.filter((e, idx) => {
-                    // console.log(idx)
-                    var type = 0;
-                    for (let i = 0; i < img1.length; i++) {
-                        if (i != idx && e == img1[i].src) {
-                            upImage.push({
-                                index: idx,
-                                item: e,
-                                oldIndex: i
-                            })
-                        }
-                        if (e == img1[i].src) {
-                            type = 1;
-                            break;
-                        }
-
-                    }
-                    if (type == 0) {
-                        addImage.push({
-                            index: idx,
-                            img: e
-                        })
-                    }
-                })
-                img1.filter((e, idx) => {
-                    var type = 0;
-                    for (let i = 0; i < img2.length; i++) {
-                        if (e.src == img2[i]) {
-                            type = 1;
-                            break;
-                        }
-
-                    }
-                    if (type == 0) {
-                        delImage.push(idx)
-                    }
-                })
                 console.log({
                     form,
 
 
-                    "改变排序的图片索引": upImage,
-                    "新增图片": addImage,
-                    "删除的图片索引": delImage
+                    // "改变排序的图片索引": upImage,
+                    // "新增图片": addImage,
+                    // "删除的图片索引": delImage
                 })
 
                 var formTo = {
                     ...form,
-                    image: {
-                        update: upImage,
-                        delete: delImage,
-                        add: addImage
-                    }
+                    // image: {
+                    //     update: upImage,
+                    //     delete: delImage,
+                    //     add: addImage
+                    // }
                 }
                 // console.log(formTo)
 
@@ -497,9 +434,10 @@
                     })
 
                 }
-                var imgList = addImage.map((e) => {
-                    return e.img
-                })
+                if(rawData.image==form.image){
+                    return;
+                }
+                 var imgList = [formTo.image];
                 if (this.isYasuo) {
 
                     // console.log(imglist)
@@ -511,12 +449,9 @@
                                 (base64All) => {
 
                                     base64All = base64All.map((e, i) => {
-                                        return {
-                                            base64: e,
-                                            index: addImage[i].index || 0
-                                        }
+                                        return e
                                     })
-                                    formTo.image.add = base64All;
+                                    formTo.image = base64All[0];
                                     requst(formTo)
                                 })
                         })
@@ -525,12 +460,9 @@
                     YCImg.imgsToBase64(imgList).then(base64All => {
                         // console.log(['转成base64',base64All])
                         base64All = base64All.map((e, i) => {
-                            return {
-                                base64: e,
-                                index: addImage[i].index || 0
-                            }
+                            return e
                         })
-                        formTo.image.add = base64All;
+                        formTo.image = base64All[0];
                         requst(formTo)
                     })
 

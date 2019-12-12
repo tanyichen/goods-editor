@@ -6,6 +6,21 @@
                 "navigationBarTitleText": "发布表单"
             }
         },{
+            "path": "pages/goods/publish-item1",
+            "style": {
+                "navigationBarTitleText": "单商品1"
+            }
+        },{
+            "path": "pages/goods/publish-item2",
+            "style": {
+                "navigationBarTitleText": "单商品1"
+            }
+        },{
+            "path": "pages/goods/publish-item3",
+            "style": {
+                "navigationBarTitleText": "单商品1"
+            }
+        },{
             "path": "pages/goods/publish-2",
             "style": {
                 "navigationBarTitleText": "精简单商品2"

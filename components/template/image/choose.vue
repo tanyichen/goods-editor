@@ -6,8 +6,23 @@
                     <view class=""></view>
                     <view class="uni-uploader-info">{{imgList.length}}/{{count}}</view>
                 </view>
-                <view class="uni-uploader-body">
-                    <view class="uni-uploader__files" >
+                <view v-if="name" class="uni-uploader-body">
+                    <view class="uni-uploader__files">
+                        <block v-for="(image,index) in imgList" :key="index">
+                            <view class="uni-uploader__file" style="position: relative;">
+                                <image mode="aspectFill" class="uni-uploader__img" :src="image[name]"></image>
+                                <view v-if="index" class="set-capital" style="background: #0A98D5;" @tap="setCapital(index)">设为主图</view>
+                                <view v-else class="set-capital">主图</view>
+                                <view class="close-view" @click="close(index)">x</view>
+                            </view>
+                        </block>
+                        <view class="uni-uploader__input-box" v-show="imgList.length < count">
+                            <view class="uni-uploader__input" @tap="chooseImg"></view>
+                        </view>
+                    </view>
+                </view>
+                <view v-else class="uni-uploader-body">
+                    <view class="uni-uploader__files">
                         <block v-for="(image,index) in imgList" :key="index">
                             <view class="uni-uploader__file" style="position: relative;">
                                 <image mode="aspectFill" class="uni-uploader__img" :src="image"></image>
@@ -30,7 +45,12 @@
     export default {
         name: 'image-choose',
         props: {
-
+            name: {
+                type:String,
+                default:()=>{
+                    return ''
+                }
+            },
             imgList: {
                 //接收的图片列表[{src:12.jpg}]
                 type: Array,
@@ -68,43 +88,58 @@
 
             chooseImg() { //选择图片
                 // console.log('选择图片')
-                var count = this.count - this.imgList.length;
+                
+                var imgList = JSON.parse(JSON.stringify(this.imgList));
+                var count = this.count - imgList.length;
                 uni.chooseImage({
                     count: count,
                     success: (res) => {
-                        var imgs = res.tempFilePaths || [];
-                        var count = imgs.length + this.imgList.length;
-                        var imgList = this.imgList;
-                        if (count <= this.count) {
-                            imgList = this.imgList.concat(res.tempFilePaths);
-                            this.$emit("changes", imgList);
-                        } else {
-                            var len = this.count - this.imgList.length;
+                        if (typeof res.tempFilePaths == 'object') {
+                            var imgs = res.tempFilePaths || [];
+                            
+                              count = imgs.length + imgList.length;
+
+                            // if (count <= this.count) {
+                            //     imgList = this.imgList.concat(res.tempFilePaths);
+                            //     this.$emit("changes", imgList);
+                            // } else {
+                            var num = this.count - imgList.length;
+                            var len =res.tempFilePaths.length;
+                            if(len>num){
+                                uni.showToast({
+                                    title: '最多只能添加' + this.count + '张图片',
+                                    icon: 'none'
+                                })
+                                len=num;
+                            }
                             // console.log(len)
                             for (var i = 0; i < len; i++) {
-                                imgList.push(res.tempFilePaths[i])
+                                if (this.name) {
+                                    var item = {};
+                                    item[this.name] = res.tempFilePaths[i];
+                                    imgList.push(item)
+                                } else {
+                                    imgList.push(res.tempFilePaths[i])
+                                }
                             }
                             this.$emit("changes", imgList);
-                            uni.showToast({
-                                title: '最多只能添加' + this.count + '张图片',
-                                icon: 'none'
-                            })
+
+                            // }
 
                         }
-
 
                     },
                 })
             },
             close(e) {
-                var imgList = this.imgList;
+                var imgList = JSON.parse(JSON.stringify(this.imgList));
                 imgList.splice(e, 1);
                 this.$emit("changes", imgList);
 
             },
             setCapital(i, name) {
-                var imgList=this.imgList;
-                imgList[0]= imgList.splice(i,1,imgList[0])[0];
+                var imgList = JSON.parse(JSON.stringify(this.imgList));
+                imgList[0] = imgList.splice(i, 1, imgList[0])[0];
                 this.$emit("changes", imgList);
             },
 

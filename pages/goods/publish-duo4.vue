@@ -10,9 +10,7 @@
                 <!-- <image-cut></image-cut> -->
                 <image :src="form.image" style="width: 200px;height: 200px;" mode="aspectFill"> </image>
             </view>
-            <!--            <view class="swiper-list" style="padding-top: 5px;height: auto;">
-                <choose :count="count" :imgList="imgList" @changes="fileChange"></choose>
-            </view> -->
+
             <compress ref="compress" :maxwh="maxwh" :quality="quality"> </compress>
 
             <view class="list">

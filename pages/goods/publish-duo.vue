@@ -55,7 +55,7 @@
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             地区
                         </view>
-                        <input :class="form.category_id?'':'red'" type="text" disabled="true" :value="address"
+                        <input :class="form.area_id?'':'red'" type="text" disabled="true" :value="address"
                             placeholder="请选择" style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
                     </view>
                 </view>
@@ -178,7 +178,7 @@
                                                     </view>
 
                                                     <view class="uni-flex iconfont" style="align-self: center;" @tap="delTable('compose',i,idx)">
-                                                       ✕
+                                                        ✕
                                                     </view>
                                                 </view>
                                             </view>
@@ -208,12 +208,12 @@
 
             </view>
             <view class="list uni-row uni-flex">
-                <view class="uni-flex uni-flex-item" style="padding: 5px 0;">
+                <view class="uni-flex uni-flex-item li"  >
                     <view class="uni-flex uni-row color-nav" style="writing-mode:tb-rl">
                         版本
                     </view>
 
-                    <view @tap="addTable('version')" class="uni-row uni-flex uni-flex-item" style="justify-content: center;background: #fff;padding: 10px;">
+                    <view @tap="addTable('version')" class=" uni-row uni-flex uni-flex-item" style="justify-content: center;background: #fff;padding: 10px;">
                         添加版本
                     </view>
 
@@ -228,8 +228,8 @@
                     </view>
                     <view class="uni-flex uni-column" style="width: 100%;box-sizing: border-box;">
                         <text-image :formData="textImageData" @changes="changesTextImage"></text-image>
-                        <view class=" uni-flex-item" @tap="addTable('content')">
-                            <view class="uni-row uni-flex" style="justify-content: center;background: #fff;padding: 10px;">
+                        <view class=" uni-flex-item li" @tap="addTable('content')" style="background: #f1f1f1;">
+                            <view class="uni-row uni-flex " style="justify-content: center;background: #fff;padding: 10px;">
                                 添加内容
                             </view>
                         </view>
@@ -363,6 +363,38 @@
                 // console.log(this.form.content)
                 return this.form.content;
             }
+        },watch: {
+            'form.stock': {
+                handler(e,old) {
+                    var val=parseInt(e);
+                    // console.log([e==val,e,val])
+                    if(val!=e){
+                    val=''+val;
+                    var stock=parseInt(val.substr(0,6)) || '';
+                    console.log(stock)
+                    setTimeout(()=>{
+                    this.$set(this.form,'stock',stock);
+                    },10)
+                    }
+                },
+                immediate: true
+            },'form.price': {
+                handler(e,old) {
+                    var val=Math.round(e*100)/100;
+                    // console.log({e,val})
+                    if(val!=e){
+                        val =''+val;
+                        var price=val.substr(0,6);
+                        price=Math.round(price*100)/100;
+                        // console.log(price)
+                        setTimeout(()=>{
+                            this.$set(this.form,'price',price);
+                        },10)
+                    }
+
+                },
+                immediate: true
+            }
         },
         onShow() {
 
@@ -399,7 +431,7 @@
             }
             this.form = JSON.parse(JSON.stringify(rawData));
             this.imgList = imgList;
-            console.log(imgList)
+            // console.log(imgList)
             // Request('NewsCategory_list', {
             //     data: {
             //         quality: 2
@@ -592,7 +624,7 @@
                 });
             },
             addTable(e, idx) {
-                console.log(e)
+                // console.log(e)
                 switch (e) {
                     case 'attribute':
                         // console.log(e)
@@ -768,7 +800,7 @@
             },
             // 返回的图片列表
             fileChange(e) {
-                console.log(e)
+                // console.log(e)
                 this.imgList = e;
 
             },
@@ -782,7 +814,7 @@
                 uni.showLoading({
                     title: '数据处理中'
                 });
-                setTimeout(function () {
+                setTimeout(function() {
                     uni.hideLoading();
                 }, 5000);
                 console.log((this.imgList))
@@ -1265,7 +1297,7 @@
                                             index: addImage[i].index || 0
                                         }
                                     })
-                                    formTo.image.add=base64All;
+                                    formTo.image.add = base64All;
                                     requst(formTo)
                                 })
                         })
@@ -1279,7 +1311,7 @@
                                 index: addImage[i].index || 0
                             }
                         })
-                        formTo.image.add=base64All;
+                        formTo.image.add = base64All;
                         requst(formTo)
                     })
 
@@ -1290,8 +1322,10 @@
 </script>
 
 <style lang="scss" scoped>
+    .uni-page-body {
+        background: #a0a0a0;
+    }
 
-    
     .color-nav {
         flex-direction: column;
         box-sizing: border-box;
@@ -1307,10 +1341,12 @@
     }
 
     .list {
+        background: #FFFFFF;
         padding: 5px 0;
         box-sizing: border-box;
 
         .li {
+            background: #f1f1f1;
             padding: 1px 0;
             box-sizing: border-box;
         }

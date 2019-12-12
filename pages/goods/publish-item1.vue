@@ -31,21 +31,21 @@
                 </view>
                 <view class="li">
                     <view class="uni-row uni-flex" style="justify-content: space-between;background: #fff;padding: 10px;">
-
+                
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             默认价格￥
                         </view>
-                        <input :class="form.price?'':'red'" maxlength=6 type="number" v-model="form.price" placeholder="请输入价格"
+                        <input :class="form.price?'':'red'" type="number" v-model="form.price" placeholder="请输入价格"
                             style="background: #f3f3f3;padding: 5px;flex: 1;" />
                     </view>
                 </view>
                 <view class="li">
                     <view class="uni-row uni-flex" style="justify-content: space-between;background: #fff;padding: 10px;">
-
+                
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             库存数量
                         </view>
-                        <input :class="form.stock?'':'red'" maxlength=6 type="number" v-model="form.stock" placeholder="请输入库存数量"
+                        <input :class="form.stock?'':'red'" type="number" v-model="form.stock" placeholder="请输入库存数量"
                             style="background: #f3f3f3;padding: 5px;flex: 1;" />
                     </view>
                 </view>
@@ -55,13 +55,43 @@
                         <view class="uni-flex" style="align-self: center;width: 160upx;">
                             地区
                         </view>
-                        <input :class="form.area_id?'':'red'" type="text" disabled="true" :value="address" placeholder="请选择"
-                            style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
+                        <input :class="form.category_id?'':'red'" type="text" disabled="true" :value="address"
+                            placeholder="请选择" style="background: #f3f3f3;padding: 5px;flex: 1;" @click="showMulLinkageThreePicker" />
                     </view>
                 </view>
                 <city-picker ref="cityPicker" :dataList="cityPickerData" :label="'label'" @onConfirm="onConfirmCity"></city-picker>
             </view>
 
+            <view class="list uni-row uni-flex">
+                <view class="uni-flex uni-flex-item" style="padding: 5px 0;">
+                    <view class="uni-flex uni-row color-nav" style="writing-mode:tb-rl">
+                        属性
+                    </view>
+
+                    <view class="uni-flex-item">
+                        <view class="li uni-flex-item" v-for="(item,i) in form.attribute" :key="item.id">
+                            <view class="uni-row uni-flex" style="justify-content: space-between;background: #fff;padding: 10px;">
+                                <view class="uni-flex" style="align-self: center;padding-right: 5px;">
+                                    <input :class="item.name?'':'red'" class="uni-flex-item" type="text" v-model="item.name"
+                                        placeholder="请输入属性名" style="background: #f3f3f3;padding: 5px;flex: 1;" />
+                                </view>
+                                <view class="uni-flex" style="align-self: center;">
+                                    <input :class="item.text?'':'red'" class="uni-flex-item" type="text" v-model="item.text"
+                                        placeholder="请输入属性内容" style="background: #f3f3f3;padding: 5px;flex: 1;" />
+                                </view>
+                                <view class="uni-flex iconfont" style="align-self: center;" @tap="delTable('attribute',i)">
+                                    ✕
+                                </view>
+                            </view>
+                        </view>
+                        <view class="li uni-flex-item" @tap="addTable('attribute')">
+                            <view class="uni-row uni-flex" style="justify-content: center;background: #fff;padding: 10px;">
+                                添加
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
 
             <view class="list uni-row uni-flex" style="background: #FFFFFF;">
 
@@ -129,6 +159,13 @@
                     image: [{
                         id: '',
                         src: 'http://img3.imgtn.bdimg.com/it/u=1258271286,1804708623&fm=26&gp=0.jpg'
+                    }],
+                    attribute: [{
+                        name: '重量',
+                        text: '250g'
+                    }, {
+                        name: '尺寸',
+                        text: '大号'
                     }]
 
                 },
@@ -167,7 +204,7 @@
             }
         },
         watch: {
-'form.stock': {
+            'form.stock': {
                 handler(e,old) {
                     var val=parseInt(e);
                     // console.log([e==val,e,val])
@@ -194,7 +231,7 @@
                             this.$set(this.form,'price',price);
                         },10)
                     }
-
+            
                 },
                 immediate: true
             }
@@ -243,7 +280,7 @@
             }
             this.form = JSON.parse(JSON.stringify(rawData));
             this.imgList = imgList;
-            // console.log(imgList)
+            console.log(imgList)
             // Request('NewsCategory_list', {
             //     data: {
             //         quality: 2
@@ -322,6 +359,128 @@
                     }
                 });
             },
+            addTable(e, idx) {
+                // console.log(e)
+                switch (e) {
+                    case 'attribute':
+                        // console.log(e)
+                        // var attribute=this.attribute[i];
+                        this.form.attribute.push({
+                            id: 'name@' + Date.now(),
+                            name: '',
+                            value: ''
+                        })
+                        break;
+                    case 'compose':
+                        // console.log([e, idx])
+                        var compose = this.form.compose || [];
+
+                        compose.push({
+                            id: 'name@' + Date.now(),
+                            name: '',
+                            text: '',
+                            image: '',
+                            price: '',
+                            stock: ''
+                        })
+                        // this.form.compose = null;
+                        this.form.compose = compose;
+                        // console.log(this.version)
+                        break;
+                    case 'content':
+                        uni.showActionSheet({
+                            itemList: ['添加图片', '添加文本'],
+                            success: (e) => {
+                                var form = this.form;
+                                var content = form.content;
+                                var idxT = 0;
+                                var idxI = 0;
+                                form.content.filter(e => {
+                                    if (e.type == 'text') {
+                                        idxT++;
+                                    } else {
+                                        idxI++;
+                                    }
+                                })
+                                // console.log(form.content)
+                                switch (e.tapIndex) {
+                                    case 0:
+                                        if (idxI < 8) {
+                                            content.push({
+                                                id: 'name@' + Date.now(),
+                                                type: 'image',
+                                                text: ''
+                                            })
+
+                                            this.form = form;
+                                            // this.tapContentImg(content.length - 1)
+                                        } else {
+                                            uni.showModal({
+                                                title: '提示',
+                                                content: '不能添加太多图片了'
+                                            })
+                                        }
+                                        break;
+                                    case 1:
+
+                                        if (idxT < 5) {
+                                            content.push({
+                                                id: 'name@' + Date.now(),
+                                                type: 'text',
+                                                text: ''
+                                            })
+                                            this.form = form;
+                                        } else {
+                                            uni.showModal({
+                                                title: '提示',
+                                                content: '不能添加太多内容了'
+                                            })
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                // console.log(e)
+
+                            }
+                        })
+                        break;
+                    default:
+                        break;
+                }
+            },
+
+            delTable(e, idx) {
+
+                switch (e) {
+                    case 'attribute':
+                        // console.log(e)
+                        this.form.attribute = this.form.attribute.filter((
+                            item, i) => {
+                            // console.log([item, i, idx])
+                            if (i != idx) {
+                                return e
+                            }
+                        })
+                        break;
+                    case 'compose':
+                        console.log(e)
+                        var compose = this.form.compose;
+
+                        this.form.compose = compose.filter((item, i) => {
+                            // console.log([item, i, idx])
+                            if (idx != i) {
+                                return e
+                            }
+                        })
+                        // this.form = form;
+
+                        break;
+                    default:
+                        break;
+                }
+            },
             onConfirmClass(e) {
 
 
@@ -357,30 +516,49 @@
                 // console.log((this.imgList))
                 var form = this.form;
 
+                var attribute = form.attribute; //属性
+
+
                 // 表单验证
                 var err = {
                     msg: '',
                     ok: true
                 }
+                for (var i = 0; i < attribute.length; i++) {
+                    if (!attribute[i].name) {
+                        err.ok = false;
+                        err.msg = "属性名称输入有误\n错误位置:属性" + (i + 1) +
+                            "。"
+                        break;
+                    }
+                    if (!attribute[i].text) {
+                        err.ok = false;
+                        err.msg = "属性值输入有误\n错误位置:属性" + (i + 1) +
+                            "。"
+                        break;
+                    }
+                }
+
+
+
+
+
 
 
                 if (form.title.length < 2) {
                     err.ok = false;
                     err.msg = "标题不足2个字";
-                
+
                 } else if (!form.category_id) {
                     err.ok = false;
                     err.msg = "请选择分类";
-                
+
                 } else if (!parseFloat(form.price)) {
                     err.ok = false;
                     err.msg = "价格输入有误";
                 } else if (!parseInt(form.stock)) {
                     err.ok = false;
                     err.msg = "库存输入有误";
-                }else if (!form.area_id) {
-                    err.ok = false;
-                    err.msg = "请选择地址";
                 } else if (this.imgList.length < 1) {
                     err.ok = false;
                     err.msg = "至少添加一张图片";
