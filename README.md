@@ -12,12 +12,14 @@
 更新日期：2019-12-08;
 新添加用户登陆/注册/找回密码/用户中心/修改用户资料/服务器真实api接口
 [h5web体验地址(这个不一定是最新版-如果要看最新版请下载源码自行编译)](http://xf.01film.cn)
-[git源码下载地址](链接：https://gitee.com/wokaixin/a_fragrant_fly)
+[git源码下载地址](链接：https://github.com/tanyichen/goods-editor.git)
 ```
+![首页](/static/image/index.png)
+![商品表单1-1](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor1.png)
+![商品表单1-2](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor2.png)
+![商品表单1-3](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor3.png)
 
-![商品表单1](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor1.png)
-![商品表单2](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor2.png)
-![商品表单3](https://raw.githubusercontent.com/tanyichen/img/master/xf/editor3.png)
+![精简版单品发布](/static/image/index.png)
 
 #### 项目创建人
 tanyichen

@@ -6,7 +6,7 @@
                 <view class="" style="background: #fff;">
                     <view class="iconfont" style="position: absolute;top: 5px;right: 5px;z-index: 5;font-weight: 600;"
                         @tap="tapContent(item.type,idx)">
-                       ✕
+                      ☰
                     </view>
                     <view v-if="item.type=='image'" @tap="tapContentImg(idx)" class="uni-flex uni-row" style="padding: 20upx;width: 100%;box-sizing: border-box; background: #FFFFFF;justify-content: center;">
 

@@ -1,16 +1,64 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/goods/publish",
-			"style": {
-				"navigationBarTitleText": "商品发布"
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "一指香飞",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	}
+    "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+        {
+            "path": "pages/goods/index",
+            "style": {
+                "navigationBarTitleText": "发布表单"
+            }
+        },{
+            "path": "pages/goods/publish-2",
+            "style": {
+                "navigationBarTitleText": "精简单商品2"
+            }
+        },{
+            "path": "pages/goods/publish-1",
+            "style": {
+                "navigationBarTitleText": "精简单商品1"
+            }
+        },
+        {
+            "path": "pages/goods/publish-duo1",
+            "style": {
+                "navigationBarTitleText": "一对多套系1"
+            }
+        }, {
+            "path": "pages/goods/publish-duo2",
+            "style": {
+                "navigationBarTitleText": "一对多套系2"
+            }
+        }, {
+            "path": "pages/goods/publish-duo3",
+            "style": {
+                "navigationBarTitleText": "一对多套系3"
+            }
+        }, {
+            "path": "pages/goods/publish-duo4",
+            "style": {
+                "navigationBarTitleText": "一对多套系4"
+            }
+        }, {
+            "path": "pages/goods/publish-duo",
+            "style": {
+                "navigationBarTitleText": "商品创建"
+            }
+        }
+    ],
+    "tabBar": {
+        "color": "#7A7E83",
+        "selectedColor": "#3cc51f",
+        "borderStyle": "black",
+        "backgroundColor": "#ffffff",
+        "list": [{
+            "path": "pages/goods/index",
+            "style": {
+                "navigationBarTitleText": "表单"
+            }
+        }]
+    },
+    "globalStyle": {
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "一指香飞",
+        "navigationBarBackgroundColor": "#F8F8F8",
+        "backgroundColor": "#F8F8F8"
+    }
 }
