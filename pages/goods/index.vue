@@ -82,12 +82,12 @@
                     type: 'zuhe',
                     name: '多图',
                     rute: 'publish-item3',
-                    text: '多图+文本内容'
+                    text: '单图+文本内容'
                 }, {
                     type: 'tuiguang',
                     name: '推广',
                     rute: 'publish-item3',
-                    text: '多图+文本内容'
+                    text: '单图+文本内容'
                 }],
                 
                 listNav: [{
